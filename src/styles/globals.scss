@@ -5,12 +5,12 @@
 }
 
 :root {
-  --highlight: #4AC9FF;
-  --background: #1A1D23;
+  --highlight: #4ac9ff;
+  --background: #1a1d23;
 
-  --heading: #F8F8F8;
-  --body: #D7D7D7;
-  --info: #BBBBBB;
+  --heading: #f8f8f8;
+  --body: #d7d7d7;
+  --info: #bbbbbb;
 }
 
 @media (min-width: 1080px) {
@@ -26,8 +26,7 @@
 }
 
 body {
-  background: var(--gray-900);
-  color: var(--white);
+  background: var(--background);
 }
 
 body,
