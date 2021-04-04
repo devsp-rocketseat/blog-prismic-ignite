@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { GetStaticProps } from 'next';
 import Link from 'next/link';
@@ -33,6 +34,38 @@ interface HomeProps {
 }
 
 export default function Home({ postsPagination }: HomeProps): JSX.Element {
+  const [nextPage, setNextPage] = useState('');
+  const [arrayPosts, setArrayPosts] = useState([]);
+
+  useEffect(() => {
+    setNextPage(postsPagination.next_page);
+    setArrayPosts(postsPagination.results);
+  }, [postsPagination]);
+
+  const handleMorePosts = async (): Promise<void> => {
+    const response = await fetch(nextPage);
+    const objResponse = await response.json();
+
+    const posts = objResponse.results.map(post => {
+      return {
+        uid: post.uid,
+        first_publication_date: format(
+          new Date(post.first_publication_date),
+          'dd MMM yyyy',
+          { locale: ptBR }
+        ),
+        data: {
+          title: RichText.asText(post.data.title),
+          subtitle: RichText.asText(post.data.subtitle),
+          author: RichText.asText(post.data.author),
+        },
+      };
+    });
+
+    setNextPage(objResponse.next_page);
+    setArrayPosts(oldValue => [...oldValue, ...posts]);
+  };
+
   return (
     <>
       <Head>
@@ -42,7 +75,7 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
       <Header />
 
       <main className={styles.container}>
-        {postsPagination.results.map(post => (
+        {arrayPosts.map(post => (
           <Link key={post.uid} href={`post/${post.uid}`}>
             <a className={styles.contentPost}>
               <h1 className={commonStyles.title}>{post.data.title}</h1>
@@ -67,9 +100,13 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
         ))}
       </main>
 
-      <footer className={styles.footer}>
-        <button type="button">Carregar mais posts</button>
-      </footer>
+      {nextPage && (
+        <footer className={styles.footer}>
+          <button type="button" onClick={handleMorePosts}>
+            Carregar mais posts
+          </button>
+        </footer>
+      )}
     </>
   );
 }
@@ -79,7 +116,7 @@ export const getStaticProps: GetStaticProps = async () => {
 
   const postsResponse = await prismic.query('', {
     fetch: ['post.title', 'post.subtitle', 'post.author'],
-    pageSize: 10,
+    pageSize: 1,
   });
 
   const results = postsResponse.results.map(post => {
