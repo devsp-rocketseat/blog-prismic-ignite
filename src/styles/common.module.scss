@@ -1,1 +1,27 @@
-// TODO
+.title {
+  color: var(--heading);
+  font-style: normal;
+  font-weight: bold;
+  font-size: 1.75rem;
+  line-height: 2.125rem;
+  text-align: justify;
+  letter-spacing: -0.031rem;
+}
+
+.subtitle {
+  color: var(--body);
+  font-style: normal;
+  font-weight: normal;
+  font-size: 1.125rem;
+  line-height: 1.375rem;
+  text-align: justify;
+}
+
+.info {
+  color: var(--info);
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  line-height: 1.063rem;
+  display: inline-block;
+}
