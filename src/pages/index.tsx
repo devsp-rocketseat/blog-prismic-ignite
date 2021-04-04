@@ -1,6 +1,10 @@
 import Head from 'next/head';
 import { GetStaticProps } from 'next';
+import Link from 'next/link';
 import { FiCalendar, FiUser } from 'react-icons/fi';
+import { RichText } from 'prismic-dom';
+import { format } from 'date-fns';
+import ptBR from 'date-fns/locale/pt-BR';
 
 import Header from '../components/Header';
 
@@ -28,7 +32,7 @@ interface HomeProps {
   postsPagination: PostPagination;
 }
 
-export default function Home(): JSX.Element {
+export default function Home({ postsPagination }: HomeProps): JSX.Element {
   return (
     <>
       <Head>
@@ -38,45 +42,29 @@ export default function Home(): JSX.Element {
       <Header />
 
       <main className={styles.container}>
-        <a className={styles.contentPost}>
-          <h1 className={commonStyles.title}>Como utilizar Hooks</h1>
+        {postsPagination.results.map(post => (
+          <Link key={post.uid} href={`post/${post.uid}`}>
+            <a className={styles.contentPost}>
+              <h1 className={commonStyles.title}>{post.data.title}</h1>
 
-          <h2 className={commonStyles.subtitle}>
-            Pensando em sincronização em vez de ciclos de vida.
-          </h2>
+              <h2 className={commonStyles.subtitle}>{post.data.subtitle}</h2>
 
-          <div className={styles.containerInfo}>
-            <div>
-              <FiCalendar />
-              <span className={commonStyles.info}>15 Mar 2021</span>
-            </div>
+              <div className={styles.containerInfo}>
+                <div>
+                  <FiCalendar />
+                  <span className={commonStyles.info}>
+                    {post.first_publication_date}
+                  </span>
+                </div>
 
-            <div>
-              <FiUser />
-              <span className={commonStyles.info}>Joseph Oliveira</span>
-            </div>
-          </div>
-        </a>
-
-        <a className={styles.contentPost}>
-          <h1 className={commonStyles.title}>Como utilizar Hooks</h1>
-
-          <h2 className={commonStyles.subtitle}>
-            Pensando em sincronização em vez de ciclos de vida.
-          </h2>
-
-          <div className={styles.containerInfo}>
-            <div>
-              <FiCalendar />
-              <span className={commonStyles.info}>15 Mar 2021</span>
-            </div>
-
-            <div>
-              <FiUser />
-              <span className={commonStyles.info}>Joseph Oliveira</span>
-            </div>
-          </div>
-        </a>
+                <div>
+                  <FiUser />
+                  <span className={commonStyles.info}>{post.data.author}</span>
+                </div>
+              </div>
+            </a>
+          </Link>
+        ))}
       </main>
 
       <footer className={styles.footer}>
@@ -86,9 +74,36 @@ export default function Home(): JSX.Element {
   );
 }
 
-// export const getStaticProps = async () => {
-//   // const prismic = getPrismicClient();
-//   // const postsResponse = await prismic.query(TODO);
+export const getStaticProps: GetStaticProps = async () => {
+  const prismic = getPrismicClient();
 
-//   // TODO
-// };
+  const postsResponse = await prismic.query('', {
+    fetch: ['post.title', 'post.subtitle', 'post.author'],
+    pageSize: 10,
+  });
+
+  const results = postsResponse.results.map(post => {
+    return {
+      uid: post.uid,
+      first_publication_date: format(
+        new Date(post.first_publication_date),
+        'dd MMM yyyy',
+        { locale: ptBR }
+      ),
+      data: {
+        title: RichText.asText(post.data.title),
+        subtitle: RichText.asText(post.data.subtitle),
+        author: RichText.asText(post.data.author),
+      },
+    };
+  });
+
+  return {
+    props: {
+      postsPagination: {
+        next_page: postsResponse.next_page,
+        results,
+      },
+    },
+  };
+};
