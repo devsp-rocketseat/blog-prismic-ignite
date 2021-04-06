@@ -34,7 +34,12 @@ interface PostProps {
 }
 
 export default function Post({ post }: PostProps): JSX.Element {
-  const readingTime = 4;
+  const wordsLength = post.data.content.reduce((acc, current) => {
+    const arrayWords = RichText.asText(current.body).split(' ');
+    return acc + arrayWords.length;
+  }, 0);
+
+  const readingTime = Math.ceil(wordsLength / 200);
 
   return (
     <>
