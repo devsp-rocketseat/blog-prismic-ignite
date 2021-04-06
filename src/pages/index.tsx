@@ -82,7 +82,7 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
 
               <h2 className={commonStyles.subtitle}>{post.data.subtitle}</h2>
 
-              <div className={styles.containerInfo}>
+              <div className={commonStyles.containerInfo}>
                 <div>
                   <FiCalendar />
                   <span className={commonStyles.info}>

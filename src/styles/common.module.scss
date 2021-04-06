@@ -25,3 +25,23 @@
   line-height: 1.063rem;
   display: inline-block;
 }
+
+.containerInfo {
+  display: flex;
+  align-items: center;
+
+  div {
+    display: flex;
+    align-items: center;
+
+    svg {
+      width: 1.25rem;
+      stroke: var(--info);
+      margin-right: 0.5rem;
+    }
+
+    & + div {
+      margin-left: 1.5rem;
+    }
+  }
+}
