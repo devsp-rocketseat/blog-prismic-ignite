@@ -2,7 +2,7 @@ import Link from 'next/link';
 import styles from './header.module.scss';
 
 interface HeaderProps {
-  className: string;
+  className?: string;
 }
 
 export default function Header({ className }: HeaderProps): JSX.Element {
