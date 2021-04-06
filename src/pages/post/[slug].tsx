@@ -45,7 +45,7 @@ export default function Post({ post }: PostProps): JSX.Element {
   const readingTime = Math.ceil(wordsLength / 200);
 
   if (router.isFallback) {
-    return <div>Loading...</div>;
+    return <div>Carregando...</div>;
   }
 
   return (
@@ -66,7 +66,9 @@ export default function Post({ post }: PostProps): JSX.Element {
             <div>
               <FiCalendar />
               <span className={commonStyles.info}>
-                {post.first_publication_date}
+                {format(new Date(post.first_publication_date), 'dd MMM yyyy', {
+                  locale: ptBR,
+                })}
               </span>
             </div>
 
@@ -75,17 +77,17 @@ export default function Post({ post }: PostProps): JSX.Element {
               <span className={commonStyles.info}>{post.data.author}</span>
             </div>
 
-            <div>
+            <time>
               <FiClock />
               <span className={commonStyles.info}>{readingTime} min</span>
-            </div>
+            </time>
           </div>
         </section>
 
-        <section className={styles.containerContentPost}>
+        <article className={styles.containerContentPost}>
           {post.data.content.map(article => (
-            <article key={RichText.asText(article.heading)}>
-              <h2>{RichText.asText(article.heading)}</h2>
+            <div key={article.heading}>
+              <h2>{article.heading}</h2>
 
               <div
                 className={styles.postContent}
@@ -93,9 +95,9 @@ export default function Post({ post }: PostProps): JSX.Element {
                   __html: RichText.asHtml(article.body),
                 }}
               />
-            </article>
+            </div>
           ))}
-        </section>
+        </article>
       </main>
     </>
   );
@@ -124,17 +126,15 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const response = await prismic.getByUID('post', String(slug), {});
 
   const post = {
-    first_publication_date: format(
-      new Date(response.first_publication_date),
-      'dd MMM yyyy',
-      { locale: ptBR }
-    ),
+    uid: response.uid,
+    first_publication_date: response.first_publication_date,
     data: {
-      title: RichText.asText(response.data.title),
+      subtitle: response.data.subtitle,
+      title: response.data.title,
       banner: {
         url: response.data.banner.url,
       },
-      author: RichText.asText(response.data.author),
+      author: response.data.author,
       content: response.data.content,
     },
   };

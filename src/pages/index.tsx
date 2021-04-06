@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Head from 'next/head';
 import { GetStaticProps } from 'next';
 import Link from 'next/link';
+import Prismic from '@prismicio/client';
 import { FiCalendar, FiUser } from 'react-icons/fi';
-import { RichText } from 'prismic-dom';
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 
@@ -34,13 +34,8 @@ interface HomeProps {
 }
 
 export default function Home({ postsPagination }: HomeProps): JSX.Element {
-  const [nextPage, setNextPage] = useState('');
-  const [arrayPosts, setArrayPosts] = useState([]);
-
-  useEffect(() => {
-    setNextPage(postsPagination.next_page);
-    setArrayPosts(postsPagination.results);
-  }, [postsPagination]);
+  const [nextPage, setNextPage] = useState(postsPagination.next_page);
+  const [arrayPosts, setArrayPosts] = useState(postsPagination.results);
 
   const handleMorePosts = async (): Promise<void> => {
     const response = await fetch(nextPage);
@@ -49,15 +44,11 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
     const posts = objResponse.results.map(post => {
       return {
         uid: post.uid,
-        first_publication_date: format(
-          new Date(post.first_publication_date),
-          'dd MMM yyyy',
-          { locale: ptBR }
-        ),
+        first_publication_date: post.first_publication_date,
         data: {
-          title: RichText.asText(post.data.title),
-          subtitle: RichText.asText(post.data.subtitle),
-          author: RichText.asText(post.data.author),
+          title: post.data.title,
+          subtitle: post.data.subtitle,
+          author: post.data.author,
         },
       };
     });
@@ -86,7 +77,11 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
                 <div>
                   <FiCalendar />
                   <span className={commonStyles.info}>
-                    {post.first_publication_date}
+                    {format(
+                      new Date(post.first_publication_date),
+                      'dd MMM yyyy',
+                      { locale: ptBR }
+                    )}
                   </span>
                 </div>
 
@@ -114,23 +109,22 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
 export const getStaticProps: GetStaticProps = async () => {
   const prismic = getPrismicClient();
 
-  const postsResponse = await prismic.query('', {
-    fetch: ['post.title', 'post.subtitle', 'post.author'],
-    pageSize: 1,
-  });
+  const postsResponse = await prismic.query(
+    [Prismic.predicates.at('document.type', 'post')],
+    {
+      fetch: ['post.title', 'post.subtitle', 'post.author'],
+      pageSize: 1,
+    }
+  );
 
   const results = postsResponse.results.map(post => {
     return {
       uid: post.uid,
-      first_publication_date: format(
-        new Date(post.first_publication_date),
-        'dd MMM yyyy',
-        { locale: ptBR }
-      ),
+      first_publication_date: post.first_publication_date,
       data: {
-        title: RichText.asText(post.data.title),
-        subtitle: RichText.asText(post.data.subtitle),
-        author: RichText.asText(post.data.author),
+        title: post.data.title,
+        subtitle: post.data.subtitle,
+        author: post.data.author,
       },
     };
   });
