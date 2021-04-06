@@ -77,10 +77,10 @@ export default function Post({ post }: PostProps): JSX.Element {
               <span className={commonStyles.info}>{post.data.author}</span>
             </div>
 
-            <time>
+            <div>
               <FiClock />
               <span className={commonStyles.info}>{readingTime} min</span>
-            </time>
+            </div>
           </div>
         </section>
 
