@@ -12,6 +12,7 @@ import { FiCalendar, FiUser, FiClock } from 'react-icons/fi';
 import { getPrismicClient } from '../../services/prismic';
 
 import Header from '../../components/Header';
+import { UtterancesComments } from '../../components/UtterancesComments';
 
 import commonStyles from '../../styles/common.module.scss';
 import styles from './post.module.scss';
@@ -103,6 +104,8 @@ export default function Post({ post, preview }: PostProps): JSX.Element {
           ))}
         </article>
       </main>
+
+      <UtterancesComments />
 
       {preview && (
         <aside className={commonStyles.preview}>
