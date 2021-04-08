@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Head from 'next/head';
 import { GetStaticProps } from 'next';
 import Link from 'next/link';
+
 import Prismic from '@prismicio/client';
 import { FiCalendar, FiUser } from 'react-icons/fi';
 import { format } from 'date-fns';
@@ -31,9 +32,13 @@ interface PostPagination {
 
 interface HomeProps {
   postsPagination: PostPagination;
+  preview: boolean;
 }
 
-export default function Home({ postsPagination }: HomeProps): JSX.Element {
+export default function Home({
+  postsPagination,
+  preview,
+}: HomeProps): JSX.Element {
   const [nextPage, setNextPage] = useState(postsPagination.next_page);
   const [arrayPosts, setArrayPosts] = useState(postsPagination.results);
 
@@ -102,11 +107,19 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
           </button>
         </footer>
       )}
+
+      {preview && (
+        <aside className={commonStyles.preview}>
+          <Link href="/api/exit-preview">
+            <a>Sair do modo Preview</a>
+          </Link>
+        </aside>
+      )}
     </>
   );
 }
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getStaticProps: GetStaticProps = async ({ preview = false }) => {
   const prismic = getPrismicClient();
 
   const postsResponse = await prismic.query(
@@ -135,6 +148,7 @@ export const getStaticProps: GetStaticProps = async () => {
         next_page: postsResponse.next_page,
         results,
       },
+      preview,
     },
     revalidate: 60 * 30, // 30 minutes
   };

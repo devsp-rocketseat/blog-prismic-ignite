@@ -45,3 +45,21 @@
     }
   }
 }
+
+.preview {
+  max-width: 700px;
+  margin: 0 auto 4rem;
+  background: var(--heading);
+  border-radius: 4px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  a {
+    padding: 1rem;;
+    font-weight: bold;
+    font-size: 1.20rem;
+    color: var(--background);
+  }
+}
