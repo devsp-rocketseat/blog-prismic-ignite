@@ -20,6 +20,7 @@ import styles from './post.module.scss';
 
 interface Post {
   first_publication_date: string | null;
+  last_publication_date: string | null;
   data: {
     title: string;
     banner: {
@@ -57,12 +58,23 @@ export default function Post({
 }: PostProps): JSX.Element {
   const router = useRouter();
 
-  const wordsLength = post.data.content.reduce((acc, current) => {
+  const wordsLength = post?.data?.content.reduce((acc, current) => {
     const arrayWords = RichText.asText(current.body).split(' ');
     return acc + arrayWords.length;
   }, 0);
 
   const readingTime = Math.ceil(wordsLength / 200);
+
+  let lastPublicationDate = '';
+  if (post.first_publication_date !== post.last_publication_date) {
+    lastPublicationDate = format(
+      new Date(post.last_publication_date),
+      "'* editado em' dd MMM yyyy', às' H':'m",
+      {
+        locale: ptBR,
+      }
+    );
+  }
 
   if (router.isFallback) {
     return <div>Carregando...</div>;
@@ -103,6 +115,10 @@ export default function Post({
             </div>
           </div>
         </section>
+
+        {lastPublicationDate && (
+          <span className={styles.lastPublication}>{lastPublicationDate}</span>
+        )}
 
         <article className={styles.containerContentPost}>
           {post.data.content.map(article => (
@@ -215,6 +231,7 @@ export const getStaticProps: GetStaticProps = async ({
   const post = {
     uid: response.uid,
     first_publication_date: response.first_publication_date,
+    last_publication_date: response.last_publication_date,
     data: {
       subtitle: response.data.subtitle,
       title: response.data.title,
