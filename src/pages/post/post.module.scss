@@ -41,12 +41,55 @@
       margin: 3.5rem 0 3rem;
     }
 
-    p, ul {
+    p,
+    ul {
       margin-top: 1.5rem;
     }
 
     li {
       margin-top: 0.5rem;
     }
+  }
+}
+
+.line {
+  max-width: 700px;
+  margin: 0 auto 4rem;
+  border: 1px solid #292D36;
+}
+
+.containerNavigation {
+  max-width: 700px;
+  margin: 0 auto 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  div {
+    max-width: 330px;
+
+    h3 {
+      color: var(--heading);
+      font-style: normal;
+      font-weight: normal;
+      font-size: 1.125rem;
+      line-height: 1.375rem;
+      letter-spacing: -0.031rem;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+    }
+
+    span {
+      color: var(--highlight);
+      font-style: normal;
+      font-weight: 600;
+      font-size: 1rem;
+      line-height: 1.188rem;
+      letter-spacing: -0.031rem;
+    }
+  }
+
+  div + div {
+    text-align: right;
   }
 }
